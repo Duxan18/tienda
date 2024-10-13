@@ -33,7 +33,8 @@ def subir_valor():
     connection.close()
 
     valores.append(valor)
-    return jsonify({"message": "Valor agregado exitosamente."})
+    return jsonify({"message": "Valor y detalle agregados exitosamente."})
+
 
 @app.route('/obtener_suma', methods=['GET'])
 def obtener_suma():

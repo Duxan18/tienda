@@ -1,86 +1,93 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sumatoria Diaria</title>
+    <title>Subir Valor</title>
     <style>
-        /* Asegura que el diseño sea adaptable a la pantalla */
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-color: #f7f7f7;
+            margin: 20px;
+            background-color: #f4f4f4;
         }
-        
-        h1, h2 {
+        h1 {
             color: #333;
         }
-
-        input, button {
-            font-size: 1.2em;
-            padding: 0.8em;
-            margin: 0.5em;
-            width: 90%;
-            max-width: 300px;
-            border: 1px solid #ccc;
+        form {
+            background-color: #fff;
+            padding: 20px;
             border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
         button {
-            background-color: #4CAF50;
+            padding: 10px 15px;
+            background-color: #5cb85c;
             color: white;
-            cursor: pointer;
             border: none;
+            border-radius: 3px;
+            cursor: pointer;
         }
-
         button:hover {
-            background-color: #45a049;
+            background-color: #4cae4c;
         }
-
-        #resultado {
-            font-size: 1.5em;
+        #sumaTotal {
+            margin-top: 20px;
+            font-size: 1.2em;
             color: #333;
         }
     </style>
 </head>
 <body>
-    <h1>Subir Valor</h1>
-    <input type="number" id="valor" placeholder="Ingrese un valor">
-    <button onclick="subirValor()">Enviar</button>
+    <h1>Subir un Valor</h1>
+    <form id="valorForm">
+        <label for="valor">Valor:</label>
+        <input type="number" id="valor" name="valor" placeholder="Ingresa el valor" required><br>
+        
+        <label for="detalle">Detalle:</label>
+        <input type="text" id="detalle" name="detalle" placeholder="Ingresa el detalle (opcional)"><br>
+        
+        <button type="submit">Enviar</button>
+    </form>
     
     <h2>Suma Total</h2>
-    <button onclick="obtenerSuma()">Obtener Suma</button>
-    <p id="resultado"></p>
+    <p id="sumaTotal"></p>
 
     <script>
-        function subirValor() {
-            const valor = document.getElementById("valor").value;
-            fetch('/subir_valor', {
+        document.getElementById('valorForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const valor = document.getElementById('valor').value;
+            const detalle = document.getElementById('detalle').value || "No informa";
+
+            const response = await fetch('/subir_valor', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ valor: parseFloat(valor) })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
+                body: JSON.stringify({ valor: parseFloat(valor), detalle })
             });
+
+            if (response.ok) {
+                alert("Valor y detalle agregados exitosamente.");
+                obtenerSumaTotal();
+            } else {
+                alert("Error al agregar el valor.");
+            }
+        });
+
+        async function obtenerSumaTotal() {
+            const response = await fetch('/obtener_suma');
+            const data = await response.json();
+            document.getElementById('sumaTotal').textContent = "Suma Total: " + data.suma_total;
         }
 
-        function obtenerSuma() {
-            fetch('/obtener_suma')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById("resultado").innerText = "Suma total: " + data.suma_total;
-            });
-        }
+        obtenerSumaTotal();
     </script>
 </body>
 </html>
