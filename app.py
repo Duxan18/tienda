@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime, time
 import atexit
-from db.db import create_connection  # Ajusta la importación según la ubicación del archivo
+from db.db import create_connection
 
 app = Flask(__name__)
 
